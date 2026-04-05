@@ -1,0 +1,335 @@
+name: Autograding Tests
+on:
+  - push
+  - repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Project
+      continue-on-error: true
+      run: |
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --config Release
+
+    - name: Build Check
+      id: build
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Build Check
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            echo "Build successful"
+          else
+            echo "Build failed" && exit 1
+          fi
+        timeout: 10
+        max-score: 0
+
+    # ===================================================================
+    # Constructor & Destructor (10 pts)
+    # ===================================================================
+
+    - name: "Constructor & is_empty (10 pts)"
+      id: constructor
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Constructor & is_empty"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.DefaultConstructorCreatesEmptyTree
+        timeout: 10
+        max-score: 10
+
+    - name: "Destructor: Frees Memory (5 pts)"
+      id: destructor
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Destructor: Frees Memory"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.DestructorFreesAllMemory
+        timeout: 10
+        max-score: 5
+
+    # ===================================================================
+    # Insert (15 pts)
+    # ===================================================================
+
+    - name: "Insert: Single Node (5 pts)"
+      id: insert-single
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Insert: Single Node"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.InsertSingleNode
+        timeout: 10
+        max-score: 5
+
+    - name: "Insert: Multiple Nodes (5 pts)"
+      id: insert-multiple
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Insert: Multiple Nodes"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.InsertMultipleNodes
+        timeout: 10
+        max-score: 5
+
+    - name: "Insert: Duplicates Ignored (5 pts)"
+      id: insert-duplicates
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Insert: Duplicates Ignored"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.InsertDuplicateIgnored
+        timeout: 10
+        max-score: 5
+
+    # ===================================================================
+    # Search (10 pts)
+    # ===================================================================
+
+    - name: "Search: Found (5 pts)"
+      id: search-found
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Search: Found"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.SearchFindsRoot:BSTTest.SearchFindsLeaf
+        timeout: 10
+        max-score: 5
+
+    - name: "Search: Not Found (5 pts)"
+      id: search-not-found
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Search: Not Found"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.SearchEmptyTreeReturnsFalse:BSTTest.SearchMissingValueReturnsFalse
+        timeout: 10
+        max-score: 5
+
+    # ===================================================================
+    # Traversals (20 pts)
+    # ===================================================================
+
+    - name: "Inorder Traversal (5 pts)"
+      id: inorder
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Inorder Traversal"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.InorderSorted
+        timeout: 10
+        max-score: 5
+
+    - name: "Preorder Traversal (5 pts)"
+      id: preorder
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Preorder Traversal"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.PreorderRootFirst
+        timeout: 10
+        max-score: 5
+
+    - name: "Postorder Traversal (5 pts)"
+      id: postorder
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Postorder Traversal"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.PostorderRootLast
+        timeout: 10
+        max-score: 5
+
+    - name: "Traversals: Edge Cases (5 pts)"
+      id: traversals-edge
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Traversals: Edge Cases"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.TraversalsEmptyTree:BSTTest.TraversalSingleNode
+        timeout: 10
+        max-score: 5
+
+    # ===================================================================
+    # Height (10 pts)
+    # ===================================================================
+
+    - name: "Height: Empty & Single (5 pts)"
+      id: height-basic
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Height: Empty & Single"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.HeightEmptyTree:BSTTest.HeightSingleNode
+        timeout: 10
+        max-score: 5
+
+    - name: "Height: Balanced & Degenerate (5 pts)"
+      id: height-advanced
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Height: Balanced & Degenerate"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.HeightBalancedTree:BSTTest.HeightDegenerateTree
+        timeout: 10
+        max-score: 5
+
+    # ===================================================================
+    # Size (10 pts)
+    # ===================================================================
+
+    - name: "Size: Empty & Single (5 pts)"
+      id: size-basic
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Size: Empty & Single"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.SizeEmptyTree:BSTTest.SizeSingleNode
+        timeout: 10
+        max-score: 5
+
+    - name: "Size: Multiple & Duplicates (5 pts)"
+      id: size-advanced
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Size: Multiple & Duplicates"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.SizeSevenNodes:BSTTest.SizeAfterDuplicateInsert
+        timeout: 10
+        max-score: 5
+
+    # ===================================================================
+    # is_balanced (10 pts)
+    # ===================================================================
+
+    - name: "Is Balanced: Balanced Trees (5 pts)"
+      id: balanced-true
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Is Balanced: Balanced Trees"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.IsBalancedEmptyTree:BSTTest.IsBalancedSingleNode:BSTTest.IsBalancedSevenNodeTree
+        timeout: 10
+        max-score: 5
+
+    - name: "Is Balanced: Unbalanced Tree (5 pts)"
+      id: balanced-false
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Is Balanced: Unbalanced Tree"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.IsBalancedDegenerateReturnsFalse
+        timeout: 10
+        max-score: 5
+
+    # ===================================================================
+    # Clear (10 pts)
+    # ===================================================================
+
+    - name: "Clear: Empty & Reset (5 pts)"
+      id: clear-reset
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Clear: Empty & Reset"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.ClearEmptyTreeIsNoOp:BSTTest.ClearResetsTree
+        timeout: 10
+        max-score: 5
+
+    - name: "Clear: Reinsertion (5 pts)"
+      id: clear-reinsertion
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Clear: Reinsertion"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.ClearAllowsReinsertion
+        timeout: 10
+        max-score: 5
+
+    # ===================================================================
+    # Remove (30 pts)
+    # ===================================================================
+
+    - name: "Remove: Leaf Node (5 pts)"
+      id: remove-leaf
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Remove: Leaf Node"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.RemoveLeafNode
+        timeout: 10
+        max-score: 5
+
+    - name: "Remove: One Child (5 pts)"
+      id: remove-one-child
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Remove: One Child"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.RemoveNodeWithOneChild
+        timeout: 10
+        max-score: 5
+
+    - name: "Remove: Two Children (5 pts)"
+      id: remove-two-children
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Remove: Two Children"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.RemoveNodeWithTwoChildren
+        timeout: 10
+        max-score: 5
+
+    - name: "Remove: Root (5 pts)"
+      id: remove-root
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Remove: Root"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.RemoveRoot
+        timeout: 10
+        max-score: 5
+
+    - name: "Remove: Edge Cases (5 pts)"
+      id: remove-edge
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Remove: Edge Cases"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.RemoveFromEmptyTreeIsNoOp:BSTTest.RemoveNotFoundIsNoOp:BSTTest.RemoveOnlyNodeLeavesEmptyTree
+        timeout: 10
+        max-score: 5
+
+    - name: "Remove: Multiple in Sequence (5 pts)"
+      id: remove-sequence
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Remove: Multiple in Sequence"
+        command: cd build && ./run_tests --gtest_filter=BSTTest.MultipleRemovesInSequence
+        timeout: 10
+        max-score: 5
+
+    # ===================================================================
+    # Report results
+    # ===================================================================
+
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        BUILD_RESULTS: "${{steps.build.outputs.result}}"
+        CONSTRUCTOR_RESULTS: "${{steps.constructor.outputs.result}}"
+        DESTRUCTOR_RESULTS: "${{steps.destructor.outputs.result}}"
+        INSERT-SINGLE_RESULTS: "${{steps.insert-single.outputs.result}}"
+        INSERT-MULTIPLE_RESULTS: "${{steps.insert-multiple.outputs.result}}"
+        INSERT-DUPLICATES_RESULTS: "${{steps.insert-duplicates.outputs.result}}"
+        SEARCH-FOUND_RESULTS: "${{steps.search-found.outputs.result}}"
+        SEARCH-NOT-FOUND_RESULTS: "${{steps.search-not-found.outputs.result}}"
+        INORDER_RESULTS: "${{steps.inorder.outputs.result}}"
+        PREORDER_RESULTS: "${{steps.preorder.outputs.result}}"
+        POSTORDER_RESULTS: "${{steps.postorder.outputs.result}}"
+        TRAVERSALS-EDGE_RESULTS: "${{steps.traversals-edge.outputs.result}}"
+        HEIGHT-BASIC_RESULTS: "${{steps.height-basic.outputs.result}}"
+        HEIGHT-ADVANCED_RESULTS: "${{steps.height-advanced.outputs.result}}"
+        SIZE-BASIC_RESULTS: "${{steps.size-basic.outputs.result}}"
+        SIZE-ADVANCED_RESULTS: "${{steps.size-advanced.outputs.result}}"
+        BALANCED-TRUE_RESULTS: "${{steps.balanced-true.outputs.result}}"
+        BALANCED-FALSE_RESULTS: "${{steps.balanced-false.outputs.result}}"
+        CLEAR-RESET_RESULTS: "${{steps.clear-reset.outputs.result}}"
+        CLEAR-REINSERTION_RESULTS: "${{steps.clear-reinsertion.outputs.result}}"
+        REMOVE-LEAF_RESULTS: "${{steps.remove-leaf.outputs.result}}"
+        REMOVE-ONE-CHILD_RESULTS: "${{steps.remove-one-child.outputs.result}}"
+        REMOVE-TWO-CHILDREN_RESULTS: "${{steps.remove-two-children.outputs.result}}"
+        REMOVE-ROOT_RESULTS: "${{steps.remove-root.outputs.result}}"
+        REMOVE-EDGE_RESULTS: "${{steps.remove-edge.outputs.result}}"
+        REMOVE-SEQUENCE_RESULTS: "${{steps.remove-sequence.outputs.result}}"
+      with:
+        runners: build,constructor,destructor,insert-single,insert-multiple,insert-duplicates,search-found,search-not-found,inorder,preorder,postorder,traversals-edge,height-basic,height-advanced,size-basic,size-advanced,balanced-true,balanced-false,clear-reset,clear-reinsertion,remove-leaf,remove-one-child,remove-two-children,remove-root,remove-edge,remove-sequence

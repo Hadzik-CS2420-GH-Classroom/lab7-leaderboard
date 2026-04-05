@@ -1,7 +1,7 @@
 #include "BinarySearchTree.h"
 
 #include <iostream>
-#include <algorithm>   // std::max
+#include <algorithm>   // std::max, std::abs
 
 // =============================================================================
 // Lab 7: Leaderboard — BinarySearchTree Implementation
@@ -62,9 +62,9 @@ void BinarySearchTree::insert(int value)
 // Node there.
 //
 // - Base case: node == nullptr → allocate and return a new Node(value)
-// - If value < node->value → recurse left, assign result to node->left
-// - If value > node->value → recurse right, assign result to node->right
-// - If value == node->value → duplicate; do nothing
+// - If value < node->data → recurse left, assign result to node->left
+// - If value > node->data → recurse right, assign result to node->right
+// - If value == node->data → duplicate; do nothing
 // - Always return node at the end so parent links stay intact
 //
 BinarySearchTree::Node* BinarySearchTree::insert_(Node* node, int value)
@@ -78,14 +78,18 @@ BinarySearchTree::Node* BinarySearchTree::insert_(Node* node, int value)
 // remove
 // ---------------------------------------------------------------------------
 //
-// TODO 5: Remove value from the BST. Do nothing if the value is not found.
+// TODO 5: Remove value from the BST. Return true if the value was found and
+// removed, false otherwise.
 //
-// Hint: same delegation pattern as insert — assign remove_(root_, value)
-// back to root_.
+// Hint: create a local bool removed = false, then delegate to
+// remove_(root_, value, removed) and assign the return value back to root_.
+// Return removed.
 //
-void BinarySearchTree::remove(int value)
+bool BinarySearchTree::remove(int value)
 {
     // Your code here
+
+    return false; // placeholder
 }
 
 // ---------------------------------------------------------------------------
@@ -94,7 +98,10 @@ void BinarySearchTree::remove(int value)
 //
 // TODO 6: Recursively find and remove the node holding value.
 //
-// There are THREE cases once the target node is found:
+// When value is not found (node == nullptr), return nullptr without changing
+// removed.
+//
+// When value matches node->data, set removed = true, then handle THREE cases:
 //
 // Case 1 — No children (leaf):
 //   Delete the node and return nullptr.
@@ -103,13 +110,15 @@ void BinarySearchTree::remove(int value)
 //   Save the non-null child, delete the node, return the saved child.
 //
 // Case 3 — Two children:
-//   Find the in-order successor (smallest value in the RIGHT subtree)
-//   using find_min_. Copy its value into the current node. Then recurse
-//   into the right subtree to remove that successor node.
+//   Find the in-order successor (smallest node in the RIGHT subtree)
+//   using find_min_. Copy its data into the current node. Then recurse
+//   into the right subtree to remove that successor node (pass a dummy
+//   bool for removed since we already set it).
 //
 // Always return node at the end so parent links stay intact.
 //
-BinarySearchTree::Node* BinarySearchTree::remove_(Node* node, int value)
+BinarySearchTree::Node* BinarySearchTree::remove_(Node* node, int value,
+                                                   bool& removed)
 {
     // Your code here
 
@@ -188,9 +197,9 @@ bool BinarySearchTree::search(int value) const
 // TODO 11: Recursively search for value using the BST property.
 //
 // - Base case: node == nullptr → value not found, return false
-// - If value == node->value → found, return true
-// - If value < node->value  → recurse left
-// - If value > node->value  → recurse right
+// - If value == node->data → found, return true
+// - If value < node->data  → recurse left
+// - If value > node->data  → recurse right
 //
 bool BinarySearchTree::search_(Node* node, int value) const
 {
@@ -339,7 +348,7 @@ void BinarySearchTree::inorder() const
 //
 // TODO 20: Left → Root → Right traversal.
 //
-// Print each node's value followed by a space.
+// Print node->data followed by a space.
 //
 void BinarySearchTree::inorder_(Node* node) const
 {
@@ -365,7 +374,7 @@ void BinarySearchTree::preorder() const
 //
 // TODO 22: Root → Left → Right traversal.
 //
-// Print each node's value followed by a space.
+// Print node->data followed by a space.
 //
 void BinarySearchTree::preorder_(Node* node) const
 {
@@ -391,7 +400,7 @@ void BinarySearchTree::postorder() const
 //
 // TODO 24: Left → Right → Root traversal.
 //
-// Print each node's value followed by a space.
+// Print node->data followed by a space.
 //
 void BinarySearchTree::postorder_(Node* node) const
 {

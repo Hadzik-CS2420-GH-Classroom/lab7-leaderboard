@@ -7,8 +7,8 @@
 // A Binary Search Tree (BST) that stores int scores for an arcade leaderboard.
 //
 // BST property: for every node N,
-//   - all values in N's left subtree are < N->value
-//   - all values in N's right subtree are > N->value
+//   - all values in N's left subtree are < N->data
+//   - all values in N's right subtree are > N->data
 //
 // This lab extends the Code-Together interface with three additional methods:
 //   size(), is_balanced(), and clear().
@@ -19,14 +19,14 @@
 class BinarySearchTree {
 public:
     // -------------------------------------------------------------------------
-    // Nested Node struct — each node holds a value and two child pointers
+    // Nested Node struct — each node holds a data value and two child pointers
     // -------------------------------------------------------------------------
     struct Node {
-        int   value;
+        int   data;
         Node* left;
         Node* right;
 
-        explicit Node(int v) : value{v}, left{nullptr}, right{nullptr} {}
+        explicit Node(int value) : data(value), left(nullptr), right(nullptr) {}
     };
 
     // -------------------------------------------------------------------------
@@ -45,7 +45,7 @@ public:
     // Core Mutators
     // -------------------------------------------------------------------------
     void insert(int value);   // Insert value (ignore duplicates)
-    void remove(int value);   // Remove value (no-op if not found)
+    bool remove(int value);   // Remove value; returns true if found, false otherwise
     void clear();             // Remove all nodes; tree becomes empty
 
     // -------------------------------------------------------------------------
@@ -71,7 +71,7 @@ private:
     // Private recursive helpers
     // -------------------------------------------------------------------------
     Node* insert_(Node* node, int value);
-    Node* remove_(Node* node, int value);
+    Node* remove_(Node* node, int value, bool& removed);
     Node* find_min_(Node* node) const;   // Smallest node in a subtree
     bool  search_(Node* node, int value) const;
     int   height_(Node* node) const;

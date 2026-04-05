@@ -326,7 +326,7 @@ TEST(BSTTest, TraversalSingleNode)
 TEST(BSTTest, RemoveFromEmptyTreeIsNoOp)
 {
     BinarySearchTree bst;
-    bst.remove(99);  // should not crash
+    EXPECT_FALSE(bst.remove(99));  // not found → returns false
     EXPECT_TRUE(bst.is_empty());
 }
 
@@ -336,7 +336,7 @@ TEST(BSTTest, RemoveLeafNode)
     bst.insert(50);
     bst.insert(30);
     bst.insert(70);
-    bst.remove(30);  // leaf
+    EXPECT_TRUE(bst.remove(30));  // leaf — returns true
     EXPECT_FALSE(bst.search(30));
     EXPECT_EQ(bst.size(), 2);
     EXPECT_EQ(capture([&]{ bst.inorder(); }), "50 70 \n");
@@ -349,7 +349,7 @@ TEST(BSTTest, RemoveNodeWithOneChild)
     bst.insert(50);
     bst.insert(30);
     bst.insert(20);
-    bst.remove(30);  // one child (left = 20)
+    EXPECT_TRUE(bst.remove(30));  // one child (left = 20) — returns true
     EXPECT_FALSE(bst.search(30));
     EXPECT_TRUE(bst.search(20));
     EXPECT_EQ(bst.size(), 2);
@@ -366,7 +366,7 @@ TEST(BSTTest, RemoveNodeWithTwoChildren)
     bst.insert(40);
     bst.insert(60);
     bst.insert(80);
-    bst.remove(70);  // two children; successor is 80
+    EXPECT_TRUE(bst.remove(70));  // two children; successor is 80
     EXPECT_FALSE(bst.search(70));
     EXPECT_TRUE(bst.search(80));
     EXPECT_EQ(bst.size(), 6);
@@ -379,7 +379,7 @@ TEST(BSTTest, RemoveRoot)
     bst.insert(50);
     bst.insert(30);
     bst.insert(70);
-    bst.remove(50);  // root has two children; successor is 70
+    EXPECT_TRUE(bst.remove(50));  // root has two children; successor is 70
     EXPECT_FALSE(bst.search(50));
     EXPECT_EQ(bst.size(), 2);
     // inorder should still be sorted
@@ -391,7 +391,7 @@ TEST(BSTTest, RemoveNotFoundIsNoOp)
     BinarySearchTree bst;
     bst.insert(50);
     bst.insert(30);
-    bst.remove(99);  // not in tree
+    EXPECT_FALSE(bst.remove(99));  // not in tree → returns false
     EXPECT_EQ(bst.size(), 2);
 }
 
@@ -399,7 +399,7 @@ TEST(BSTTest, RemoveOnlyNodeLeavesEmptyTree)
 {
     BinarySearchTree bst;
     bst.insert(42);
-    bst.remove(42);
+    EXPECT_TRUE(bst.remove(42));
     EXPECT_TRUE(bst.is_empty());
     EXPECT_EQ(bst.size(), 0);
     EXPECT_EQ(bst.height(), -1);

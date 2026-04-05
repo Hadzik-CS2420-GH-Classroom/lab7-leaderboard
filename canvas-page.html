@@ -1,0 +1,327 @@
+<!-- Canvas LMS HTML Fragment — paste into the Rich Content Editor (HTML view) -->
+
+<h2>&#x1F4BB; Assignment: Lab 7 - Leaderboard</h2>
+
+<h3>&#x1F3AF; Overview</h3>
+<p>You are building the backend for an arcade leaderboard. High scores are stored in a <strong>Binary Search Tree (BST)</strong> so the system can quickly add new scores, look up whether a score is on the board, remove disqualified entries, and display all scores in ranked order.</p>
+<p>A BST stores values so that every node obeys the BST property: all values in a node&#x2019;s left subtree are smaller than the node&#x2019;s value, and all values in its right subtree are larger. This property gives O(log n) average-case performance for insert, search, and remove.</p>
+<p>Your tree stores <code>int</code> scores. You will implement:</p>
+<ul>
+    <li><strong>Structural operations</strong> &mdash; insert, remove, and clear</li>
+    <li><strong>Queries</strong> &mdash; search, is_empty, height, size, and is_balanced</li>
+    <li><strong>Traversals</strong> &mdash; inorder, preorder, and postorder</li>
+</ul>
+<p>The three lab-only methods (<code>size</code>, <code>is_balanced</code>, <code>clear</code>) were not in the Code-Togethers &mdash; read their TODO hints carefully before you start.</p>
+
+<h3>&#x1F4D6; Learning Objectives</h3>
+<p>By completing this activity, you will be able to:</p>
+<ul>
+    <li>Implement recursive BST operations from a clean interface</li>
+    <li>Handle all three remove cases: leaf, one child, and two children</li>
+    <li>Compute tree height and size using recursive helpers</li>
+    <li>Identify whether a BST is height-balanced</li>
+    <li>Perform and distinguish all three depth-first traversals</li>
+</ul>
+
+<h3>&#x1F680; Getting Started</h3>
+
+<h4>Step 1: Accept the Assignment</h4>
+<p>Click the button below to create your personal repository:</p>
+<p><a style="display: inline-block; padding: 10px 24px; font-size: 1em; font-weight: 600; color: #fff; background-color: #0b874b; border-radius: 4px; text-decoration: none;" href="https://classroom.github.com/a/PLACEHOLDER" target="_blank" rel="noopener">Accept Assignment on GitHub</a></p>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #fcf8e3; border: 1px solid #faebcc; color: #8a6d3b;">
+    <strong>Repository Access Issue?</strong><br />
+    If you don&#x2019;t see the repository after accepting, check your email for the GitHub invite.
+</div>
+
+<h4>Step 2: Clone in Visual Studio</h4>
+<ol>
+    <li>Open <strong>Visual Studio</strong></li>
+    <li>On the start window, click <strong>&#x201C;Clone a repository&#x201D;</strong></li>
+    <li>Paste your repository URL (from GitHub) into the <strong>Repository location</strong> field</li>
+    <li>Choose a local path and click <strong>Clone</strong></li>
+    <li>Visual Studio should automatically detect the CMake project and configure it</li>
+</ol>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #d9edf7; border: 1px solid #bce8f1; color: #31708f;">
+    Follow the <strong>Troubleshooting</strong> section at the bottom if CMake does not configure automatically.
+</div>
+
+<h4>Step 3: Wait for CMake Configuration</h4>
+<p>Visual Studio will automatically run CMake. Watch the <strong>Output</strong> window (<em>View &rarr; Output</em>, select <em>&#x201C;Show output from: CMake&#x201D;</em>) until you see:</p>
+<pre style="background-color: #1e1e1e; color: #d4d4d4; padding: 16px 20px; border-radius: 4px; overflow-x: auto; font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace; font-size: 0.875em; line-height: 1.6;">CMake generation finished.</pre>
+
+<h3>&#x1F4C1; Project Structure</h3>
+<pre style="background-color: #1e1e1e; color: #d4d4d4; padding: 16px 20px; border-radius: 4px; font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace; font-size: 0.875em; line-height: 1.8;">lab7-leaderboard/
+&#x251C;&#x2500;&#x2500; CMakeLists.txt
+&#x251C;&#x2500;&#x2500; assignment.json
+&#x251C;&#x2500;&#x2500; README.md
+&#x251C;&#x2500;&#x2500; include/
+&#x2502;   &#x2514;&#x2500;&#x2500; BinarySearchTree.h      # Interface &#x2014; do not modify
+&#x251C;&#x2500;&#x2500; src/
+&#x2502;   &#x251C;&#x2500;&#x2500; BinarySearchTree.cpp    # Your work goes here (TODOs 1&#x2013;24)
+&#x2502;   &#x2514;&#x2500;&#x2500; main.cpp                # Manual verification driver
+&#x2514;&#x2500;&#x2500; tests/
+    &#x2514;&#x2500;&#x2500; lab7_test.cpp           # Automated Google Test suite</pre>
+
+<h3>&#x1F4DD; What You&#x2019;ll Do</h3>
+<p>All of your work goes in <strong><code>src/BinarySearchTree.cpp</code></strong>. The header, main.cpp, and tests are provided &mdash; do not modify them. Open the <code>.cpp</code> file and work through each TODO in order. Follow the recommended order below: constructor first, then insert, then search, then traversals, then height/size/is_balanced, and save remove for last.</p>
+
+<h3>&#x1F4DA; Recommended Order</h3>
+<p>Work through the TODOs in this order:</p>
+
+<h4>1. <code>BinarySearchTree.cpp</code> &mdash; Constructor, Destructor, and clear (TODOs 1&#x2013;2, 8&#x2013;9, 12)</h4>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">Section</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">What You&#x2019;ll Implement</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 1: <code>BinarySearchTree()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Initialize <code>root_</code> to <code>nullptr</code></td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 2: <code>~BinarySearchTree()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Call <code>clear()</code> to free all nodes</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODOs 8&#x2013;9: <code>clear()</code> / <code>clear_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Post-order recursive deletion; implement early so the destructor works</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 12: <code>is_empty()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">One-liner: return whether <code>root_</code> is <code>nullptr</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>2. <code>BinarySearchTree.cpp</code> &mdash; Insert (TODOs 3&#x2013;4)</h4>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">Section</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">What You&#x2019;ll Implement</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 3: <code>insert()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Delegate to <code>insert_(root_, value)</code> and assign the return value back to <code>root_</code></td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 4: <code>insert_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Base case allocates a new node; recursive case compares and goes left or right; duplicates ignored</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>3. <code>BinarySearchTree.cpp</code> &mdash; Search (TODOs 10&#x2013;11)</h4>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">Section</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">What You&#x2019;ll Implement</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 10: <code>search()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Delegate to <code>search_(root_, value)</code></td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 11: <code>search_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Base case returns <code>false</code>; match returns <code>true</code>; compare to go left or right</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>4. <code>BinarySearchTree.cpp</code> &mdash; Traversals (TODOs 19&#x2013;24)</h4>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">Section</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">What You&#x2019;ll Implement</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODOs 19&#x2013;20: <code>inorder()</code> / <code>inorder_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Left &#x2192; Root &#x2192; Right; produces sorted output</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODOs 21&#x2013;22: <code>preorder()</code> / <code>preorder_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Root &#x2192; Left &#x2192; Right</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODOs 23&#x2013;24: <code>postorder()</code> / <code>postorder_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Left &#x2192; Right &#x2192; Root</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>5. <code>BinarySearchTree.cpp</code> &mdash; Height, Size, and is_balanced (TODOs 13&#x2013;18)</h4>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">Section</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">What You&#x2019;ll Implement</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODOs 13&#x2013;14: <code>height()</code> / <code>height_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Base case returns &#x2212;1; recursive case returns <code>1 + max(left, right)</code></td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODOs 15&#x2013;16: <code>size()</code> / <code>size_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Base case returns 0; recursive case returns <code>1 + left + right</code></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODOs 17&#x2013;18: <code>is_balanced()</code> / <code>is_balanced_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Compute heights of both subtrees; check |difference| &#x2264; 1; recurse on both sides</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>6. <code>BinarySearchTree.cpp</code> &mdash; Remove (TODOs 5&#x2013;7) &mdash; hardest, save for last</h4>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">Section</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; text-align: left; background-color: #f5f5f5; font-weight: 700;">What You&#x2019;ll Implement</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 7: <code>find_min_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Walk left until <code>left == nullptr</code>; implement this before <code>remove_</code></td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 5: <code>remove()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Delegate to <code>remove_(root_, value, removed)</code>; assign return to <code>root_</code>; return <code>removed</code></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">TODO 6: <code>remove_()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Three cases: leaf (delete, return nullptr), one child (bypass), two children (in-order successor)</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>&#x1F4CA; Grading (130 points)</h3>
+<p>Your code is auto-graded by GitHub Classroom when you push. Tests check that each TODO produces the correct output.</p>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5; font-weight: 700;">Category</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5; font-weight: 700;">Points</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5; font-weight: 700;">What is tested</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Constructor / Destructor</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Tree starts empty; no memory leaks on delete</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>insert</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">15</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Single node, multiple nodes, duplicates ignored</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>search</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Finds root, leaf, and interior nodes; returns false when missing</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>is_empty</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">5</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">True on empty tree, false after insert</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>inorder</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct sorted output for 7-node and single-node trees</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>preorder</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">5</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct root-first output</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>postorder</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">5</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct root-last output</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>height</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">&#x2212;1 empty, 0 single node, 2 for 7-node balanced tree, 4 for degenerate</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>size</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">0 empty, 1 single node, 7 for 7-node tree, unchanged by duplicates</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>is_balanced</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">True for balanced tree, false for sorted-insertion chain</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>clear</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Resets tree; allows reinsertion; no memory leaks</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>remove</code> &#x2014; leaf</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Leaf node removed, size decrements, inorder correct</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>remove</code> &#x2014; one child</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Surviving child promoted correctly</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>remove</code> &#x2014; two children</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">In-order successor used; BST property preserved</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px; font-weight: 700; background-color: #f5f5f5;"><strong>Total</strong></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px; font-weight: 700; background-color: #f5f5f5;"><strong>130</strong></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5;"></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>&#x1F527; Troubleshooting</h3>
+
+<h4>CMake does not configure automatically</h4>
+<ol>
+    <li>Make sure you have <strong>Desktop development with C++</strong> workload installed in Visual Studio</li>
+    <li>Go to <em>Project &rarr; CMake Settings</em> and ensure the configuration is correct</li>
+    <li>Try <em>Project &rarr; Delete Cache and Reconfigure</em></li>
+    <li>Verify that <code>CMakeLists.txt</code> is in the root of your cloned repository</li>
+</ol>
+
+<h4>Tests fail to build</h4>
+<ul>
+    <li>Google Test is fetched automatically via CMake&#x2019;s <code>FetchContent</code> &mdash; make sure you have an internet connection during the first build</li>
+    <li>Do <strong>not</strong> modify header files in the <code>include/</code> folder</li>
+</ul>
+
+<h4>Running the Program</h4>
+<ol>
+    <li>In Visual Studio, select <code>lab7-leaderboard.exe</code> as the startup item from the dropdown</li>
+    <li>Press <strong>Ctrl+F5</strong> to run without debugging</li>
+    <li>You should see output from each section as you complete the TODOs</li>
+</ol>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #dff0d8; border: 1px solid #d6e9c6; color: #3c763d;">
+    <strong>Tip:</strong> The TODO comments in <code>BinarySearchTree.cpp</code> include step-by-step hints for each method. Read them carefully &mdash; they match the patterns you practiced in the Code-Togethers.
+</div>

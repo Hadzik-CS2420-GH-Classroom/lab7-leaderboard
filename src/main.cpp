@@ -39,9 +39,9 @@
 //   --- Remove scores ---
 //   remove(6800) [leaf]:
 //     ranked: 7200 7800 8500 8800 9300 9600
-//   remove(7200) [one child — 7800 promoted]:
+//   remove(7200) [one child - 7800 promoted]:
 //     ranked: 7800 8500 8800 9300 9600
-//   remove(9300) [two children — successor 9600 takes over]:
+//   remove(9300) [two children - successor 9600 takes over]:
 //     ranked: 7800 8500 8800 9600
 //
 //   --- Degenerate leaderboard (sorted insertion) ---
@@ -113,11 +113,11 @@ int main()
     board.inorder();
 
     board.remove(7200);  // one child (only right child 7800)
-    std::cout << "remove(7200) [one child — 7800 promoted]:\n  ranked: ";
+    std::cout << "remove(7200) [one child - 7800 promoted]:\n  ranked: ";
     board.inorder();
 
     board.remove(9300);  // two children (successor is 9600)
-    std::cout << "remove(9300) [two children — successor 9600 takes over]:\n  ranked: ";
+    std::cout << "remove(9300) [two children - successor 9600 takes over]:\n  ranked: ";
     board.inorder();
 
     // -------------------------------------------------------------------------

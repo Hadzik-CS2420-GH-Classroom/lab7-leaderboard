@@ -53,51 +53,6 @@ All of your work goes in **`src/BinarySearchTree.cpp`**. The header, main.cpp, a
 | `src/main.cpp` | 0 | Run to verify output manually |
 | `tests/lab7_test.cpp` | 0 | Automated tests — do not modify |
 
-## Teaching Order
-
-### 1. `BinarySearchTree.cpp` — Constructor, Destructor, and clear
-
-1. **Constructor (TODO 1)** — initialize `root_` to `nullptr`
-2. **Destructor (TODO 2)** — call `clear()` to free all nodes
-3. **clear / clear_ (TODOs 8–9)** — recursive post-order deletion; implement early so the destructor works
-4. **is_empty (TODO 12)** — one-liner; implement now so tests compile
-
-### 2. `BinarySearchTree.cpp` — Insert
-
-5. **insert (TODO 3)** — delegates to `insert_`; assigns return value back to `root_`
-6. **insert_ (TODO 4)** — base case allocates a node; recursive case compares and goes left or right; always returns `node`
-
-### 3. `BinarySearchTree.cpp` — Search
-
-7. **search (TODO 10)** — delegates to `search_`
-8. **search_ (TODO 11)** — base case returns `false`; match returns `true`; compare to go left or right
-
-### 4. `BinarySearchTree.cpp` — Traversals
-
-9. **inorder / inorder_ (TODOs 19–20)** — Left, Root, Right; produces sorted output
-10. **preorder / preorder_ (TODOs 21–22)** — Root, Left, Right
-11. **postorder / postorder_ (TODOs 23–24)** — Left, Right, Root
-
-### 5. `BinarySearchTree.cpp` — Height, Size, and is_balanced
-
-12. **height / height_ (TODOs 13–14)** — base case returns -1; recursive case returns `1 + max(left, right)`
-13. **size / size_ (TODOs 15–16)** — base case returns 0; recursive case returns `1 + left + right`
-14. **is_balanced / is_balanced_ (TODOs 17–18)** — compute heights of both subtrees; check the absolute difference; recurse on both sides
-
-### 6. `BinarySearchTree.cpp` — Remove (hardest — save for last)
-
-15. **find_min_ (TODO 7)** — walk left until `left == nullptr`; implement this before remove_
-16. **remove (TODO 5)** — delegates to `remove_`; assigns return value back to `root_`
-17. **remove_ (TODO 6)** — three cases: leaf (delete, return nullptr), one child (delete, return surviving child), two children (copy successor value, recurse right)
-
-## Diagrams
-
-| Diagram | What It Shows |
-|---------|---------------|
-| CT slides — insert diagram | How the BST property routes each insertion left or right |
-| CT slides — remove diagram | The three remove cases and the in-order successor strategy |
-| CT slides — traversal diagram | The visit order for inorder, preorder, and postorder |
-
 ## Grading (130 points)
 
 | Method | Points | What is tested |
